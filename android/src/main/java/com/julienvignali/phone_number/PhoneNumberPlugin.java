@@ -1,14 +1,12 @@
 package com.julienvignali.phone_number;
 
-import android.telephony.PhoneNumberUtils;
-
 import com.google.i18n.phonenumbers.AsYouTypeFormatter;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberType;
 import com.google.i18n.phonenumbers.Phonenumber.PhoneNumber;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -79,12 +77,13 @@ public class PhoneNumberPlugin implements MethodCallHandler {
             try {
                 final PhoneNumber phoneNumber = util.parse(string, region);
                 if (util.isValidNumber(phoneNumber)) {
-                    HashMap<String, String> res = new HashMap<String, String>() {{
-                        PhoneNumberType type = util.getNumberType(phoneNumber);
-                        put("type", numberTypeToString(type));
+                    Map<String, Object> res = new HashMap<String, Object>() {{
+                        put("type", numberTypeToString(util.getNumberType(phoneNumber)));
                         put("e164", util.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.E164));
                         put("international", util.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL));
                         put("national", util.format(phoneNumber, PhoneNumberUtil.PhoneNumberFormat.NATIONAL));
+                        //put("country_code", String.valueOf(phoneNumber.getCountryCode()));
+                        put("country_code", phoneNumber.getCountryCode()); // should support int value
                     }};
                     result.success(res);
                 } else {
